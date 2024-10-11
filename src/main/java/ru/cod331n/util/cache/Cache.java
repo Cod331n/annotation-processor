@@ -1,4 +1,4 @@
-package ru.cod331n.cache;
+package ru.cod331n.util.cache;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

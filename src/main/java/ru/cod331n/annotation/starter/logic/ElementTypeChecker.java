@@ -1,10 +1,11 @@
-package ru.cod331n.annotation.starter;
+package ru.cod331n.annotation.starter.logic;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.cod331n.annotation.reflect.JavaClassesReflection;
 import ru.cod331n.util.tuple.Pair;
+import ru.cod331n.util.validation.Preconditions;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -20,14 +21,10 @@ public class ElementTypeChecker {
     protected ElementTypeChecker(final @NotNull JavaClassesReflection reflection) {
         elementHandlers = new HashMap<>();
 
-        elementHandlers.put(ElementType.TYPE, ann -> reflection.getAnnotatedClasses(ann).stream()
-                .map(cls -> new Pair<Class<?>, AnnotatedElement>(cls, cls))
-                .collect(Collectors.toList()));
+        elementHandlers.put(ElementType.TYPE, ann -> reflection.getAnnotatedClasses(ann).stream().map(cls -> new Pair<Class<?>, AnnotatedElement>(cls, cls)).collect(Collectors.toList()));
         elementHandlers.put(ElementType.FIELD, reflection::getAnnotatedFields);
         elementHandlers.put(ElementType.METHOD, reflection::getAnnotatedMethods);
-        elementHandlers.put(ElementType.PACKAGE, ann -> reflection.getAnnotatedPackages(ann).stream()
-                .map(pkg -> new Pair<Class<?>, AnnotatedElement>(null, pkg))
-                .collect(Collectors.toList()));
+        elementHandlers.put(ElementType.PACKAGE, ann -> reflection.getAnnotatedPackages(ann).stream().map(pkg -> new Pair<Class<?>, AnnotatedElement>(null, pkg)).collect(Collectors.toList()));
         elementHandlers.put(ElementType.PARAMETER, reflection::getAnnotatedParameters);
         elementHandlers.put(ElementType.CONSTRUCTOR, reflection::getAnnotatedConstructors);
         elementHandlers.put(ElementType.TYPE_USE, reflection::getAnnotatedTypesUse);
@@ -42,12 +39,9 @@ public class ElementTypeChecker {
         Collection<Pair<Class<?>, ? extends AnnotatedElement>> collection = new LinkedList<>();
 
         Arrays.stream(annotation.getAnnotation(Target.class).value()).forEach(elementType -> {
-            @Nullable
-            Function<Class<? extends Annotation>, Collection<? extends Pair<Class<?>, ? extends AnnotatedElement>>> handler = elementHandlers.get(elementType);
+            @Nullable Function<Class<? extends Annotation>, Collection<? extends Pair<Class<?>, ? extends AnnotatedElement>>> handler = elementHandlers.get(elementType);
 
-            if (handler != null) {
-                collection.addAll(handler.apply(annotation));
-            }
+            Preconditions.check(handler != null, () -> collection.addAll(handler.apply(annotation)));
         });
 
         return collection;

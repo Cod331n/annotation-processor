@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.cod331n.util.tuple.Pair;
+import ru.cod331n.util.validation.Preconditions;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -18,6 +19,8 @@ import java.util.stream.Stream;
 @SuppressWarnings("UnstableApiUsage")
 public final class JavaClassesReflection {
     private final ClassLoaderHelper classLoaderHelper;
+
+    private final int i = 1;
 
     public JavaClassesReflection(final @NotNull String packageName, final @Nullable ClassLoader classLoader) {
         this.classLoaderHelper = new ClassLoaderHelper(packageName, classLoader);
@@ -75,17 +78,19 @@ public final class JavaClassesReflection {
         getPackageClasses().forEach(clazz -> {
             for (Method method : clazz.getDeclaredMethods()) {
                 for (Parameter parameter : method.getParameters()) {
-                    if (parameter.isAnnotationPresent(annotation)) {
-                        global.add(new Pair<>(clazz, parameter));
-                    }
+                    Preconditions.check(
+                            parameter.isAnnotationPresent(annotation),
+                            () -> global.add(new Pair<>(clazz, parameter))
+                    );
                 }
             }
 
             for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
                 for (Parameter parameter : constructor.getParameters()) {
-                    if (parameter.isAnnotationPresent(annotation)) {
-                        global.add(new Pair<>(clazz, parameter));
-                    }
+                    Preconditions.check(
+                            parameter.isAnnotationPresent(annotation),
+                            () -> global.add(new Pair<>(clazz, parameter))
+                    );
                 }
             }
         });
@@ -147,6 +152,7 @@ public final class JavaClassesReflection {
         return global;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Contract(pure = true)
     public <T> T getGenericType(@NotNull Class<?> clazz) {
@@ -158,17 +164,20 @@ public final class JavaClassesReflection {
             return null;
         }
 
-        if (genericSuperclass instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-            Type[] typeArguments = parameterizedType.getActualTypeArguments();
+        return Preconditions.checkAndReturn(
+                genericSuperclass instanceof ParameterizedType,
+                () -> {
+                    ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
+                    Type[] typeArguments = parameterizedType.getActualTypeArguments();
 
-            if (typeArguments.length > 0 && typeArguments[0] instanceof Class<?>) {
-                //noinspection unchecked
-                return (T) typeArguments[0];
-            }
-        }
-
-        return null;
+                    return Preconditions.checkAndReturn(
+                            typeArguments.length > 0 && typeArguments[0] instanceof Class<?>,
+                            () -> (T) typeArguments[0],
+                            () -> null
+                    );
+                },
+                () -> null
+                );
     }
 
     @NotNull

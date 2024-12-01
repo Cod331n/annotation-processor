@@ -1,6 +1,7 @@
 package ru.cod331n.annotation.starter;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.cod331n.annotation.starter.logic.AnnotationBootstrapLogic;
 import ru.cod331n.util.validation.Preconditions;
 
@@ -29,7 +30,7 @@ public final class AnnotationProcessBootstrap {
      * @param packageName Имя пакета, в котором будет выполнена обработка аннотаций.
      * @throws IllegalArgumentException если переданное имя пакета пустое.
      */
-    public static void run(@NotNull String packageName) {
+    public static void run(@NotNull String packageName, @Nullable ClassLoader classLoader) {
         Preconditions.checkAndThrow(packageName.isEmpty(), () -> new IllegalArgumentException("Package name cannot be empty."));
 
         logic.run(packageName);

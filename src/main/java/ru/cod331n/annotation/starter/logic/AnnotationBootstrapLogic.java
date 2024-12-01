@@ -1,6 +1,7 @@
 package ru.cod331n.annotation.starter.logic;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.cod331n.annotation.AnnotationProcessor;
 import ru.cod331n.annotation.processor.AbstractAnnotationProcessor;
 import ru.cod331n.annotation.reflect.JavaClassesReflection;
@@ -12,8 +13,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 
 public final class AnnotationBootstrapLogic {
-    public void run(@NotNull String packageName) {
-        final JavaClassesReflection reflection = new JavaClassesReflection(packageName, null);
+    public void run(@NotNull String packageName, @Nullable ClassLoader classLoader) {
+        final JavaClassesReflection reflection = new JavaClassesReflection(packageName, classLoader);
 
         reflection.getAnnotatedClasses(AnnotationProcessor.class).forEach(clazz -> {
             try {

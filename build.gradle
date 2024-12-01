@@ -15,6 +15,11 @@ dependencies {
     annotationProcessor 'org.jetbrains:annotations:24.0.1'
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set('sources')
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -22,6 +27,7 @@ publishing {
             groupId = "com.github.Cod331n"
             artifactId = "annotation-processor"
             version = "1.0.0"
+            artifact sourcesJar
         }
     }
 }

@@ -19,7 +19,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            groupId = "com.github.Codein"
+            groupId = "com.github.Cod331n"
             artifactId = "annotation-processor"
             version = "1.0.0"
         }

@@ -8,9 +8,12 @@ import ru.cod331n.util.cache.CacheHolder;
 import ru.cod331n.util.validation.Preconditions;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.jar.JarFile;
 
 /**
  * Утилитарный класс для загрузки классов из заданного пакета.
@@ -42,15 +45,39 @@ public final class ClassLoaderHelper {
     @NotNull
     @Contract(pure = true)
     public Collection<Class<?>> getPackageClasses() {
-        return Preconditions.checkAndReturn(
-                packageCache.containsKey(packageName),
-                () -> packageCache.get(packageName),
-                () -> {
-                    Collection<Class<?>> classes = getPackageClasses(new File(packageUrl.getPath()), packageName);
-                    packageCache.put(packageName, classes);
-                    return classes;
-                }
-        );
+        try {
+            if ("file".equals(packageUrl.getProtocol())) {
+                Collection<Class<?>> classes = getPackageClasses(new File(packageUrl.getPath()), packageName);
+                packageCache.put(packageName, classes);
+                return classes;
+            } else if ("jar".equals(packageUrl.getProtocol())) {
+                return getPackageClassesFromJar(packageUrl, packageName);
+            } else {
+                throw new IllegalArgumentException("Unsupported protocol: " + packageUrl.getProtocol());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load classes from package: " + packageName, e);
+        }
+    }
+
+    private Collection<Class<?>> getPackageClassesFromJar(URL resource, String packageName) throws IOException {
+        Collection<Class<?>> classes = new ArrayList<>();
+        String jarPath = resource.getPath().substring(5, resource.getPath().indexOf("!"));
+        JarFile jarFile = new JarFile(jarPath);
+        jarFile.stream().filter(entry -> entry.getName().startsWith(packageName.replace(".", "/")))
+                .forEach(entry -> {
+                    if (entry.getName().endsWith(".class")) {
+                        String className = entry.getName().replace("/", ".").substring(0, entry.getName().length() - ".class".length());
+                        try {
+                            Class<?> clazz = classLoader.loadClass(className);
+                            classes.add(clazz);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException("Class not found in JAR: " + className, e);
+                        }
+                    }
+                });
+
+        return classes;
     }
 
     @NotNull

@@ -33,6 +33,6 @@ public final class AnnotationProcessBootstrap {
     public static void run(@NotNull String packageName, @Nullable ClassLoader classLoader) {
         Preconditions.checkAndThrow(packageName.isEmpty(), () -> new IllegalArgumentException("Package name cannot be empty."));
 
-        logic.run(packageName);
+        logic.run(packageName, classLoader);
     }
 }

@@ -1,9 +1,10 @@
 plugins {
-    id("java")
+    id 'java'
+    id 'maven-publish'
 }
 
-group = "ru.cod331n"
-version = "1.0-SNAPSHOT"
+group = 'ru.cod331n'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -12,4 +13,15 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:24.0.1'
     annotationProcessor 'org.jetbrains:annotations:24.0.1'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            groupId = "com.github.Codein"
+            artifactId = "annotation-processor"
+            version = "1.0.0"
+        }
+    }
 }

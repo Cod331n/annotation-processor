@@ -14,6 +14,8 @@ import java.lang.reflect.AnnotatedElement;
  * <p>Этот класс предназначен для создания процессоров аннотаций, которые могут обрабатывать аннотации.</p>
  *
  * @param <T> Тип аннотации, которую обрабатывает процессор.
+ * @apiNote Каждый наследуемый класс должен быть помечен аннотацией {@link ru.cod331n.annotation.AnnotationProcessor},
+ * чтобы стартер его увидел.
  */
 public abstract class AbstractAnnotationProcessor<T extends Annotation> {
 

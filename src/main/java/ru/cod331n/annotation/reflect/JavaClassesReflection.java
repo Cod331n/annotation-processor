@@ -20,8 +20,6 @@ import java.util.stream.Stream;
 public final class JavaClassesReflection {
     private final ClassLoaderHelper classLoaderHelper;
 
-    private final int i = 1;
-
     public JavaClassesReflection(final @NotNull String packageName, final @Nullable ClassLoader classLoader) {
         this.classLoaderHelper = new ClassLoaderHelper(packageName, classLoader);
     }

@@ -29,8 +29,8 @@ public @interface ExampleScheduler {
 @ExampleScheduler
 public class Scheduler {
 
-    private final int delay;
-    private final int period;
+    private final int delay = 0;
+    private final int period = 20;
 
     public void schedule() { // logic };
 }
@@ -42,7 +42,7 @@ public class ExampleSchedulerAnnotationProcessor extends AbstractAnnotationProce
         try {
             Scheduler scheduler = (Scheduler) clazz.newInstance();
             // example
-            Tasks.every(gameScheduler.getDelay(), gameScheduler.getPeriod(), task -> gameScheduler.schedule());
+            Tasks.every(scheduler.getDelay(), scheduler.getPeriod(), task -> scheduler.schedule());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

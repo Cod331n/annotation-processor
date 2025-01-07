@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import ru.cod331n.annotation.starter.logic.AnnotationBootstrapLogic;
 import ru.cod331n.util.validation.Preconditions;
 
+import java.util.Collection;
+
 /**
  * Класс для инициализации и запуска обработки аннотаций.
  * <p>
@@ -30,9 +32,21 @@ public final class AnnotationProcessBootstrap {
      * @param packageName Имя пакета, в котором будет выполнена обработка аннотаций.
      * @throws IllegalArgumentException если переданное имя пакета пустое.
      */
-    public static void run(@NotNull String packageName, @Nullable ClassLoader classLoader) {
+    public static void run(@NotNull String packageName, @Nullable("If null, then will use the System.getClassLoader()") ClassLoader classLoader) {
         Preconditions.checkAndThrow(packageName.isEmpty(), () -> new IllegalArgumentException("Package name cannot be empty."));
 
         logic.run(packageName, classLoader);
+    }
+
+    /**
+     * Запускает процесс обработки аннотаций в указанных пакетах.
+     *
+     * @param packageName Имена пакетов, в которых будет выполнена обработка аннотаций.
+     * @throws IllegalArgumentException если переданное имя пакета пустое.
+     */
+    public static void run(@NotNull Collection<String> packageName, @Nullable("If null, then will use the System.getClassLoader()") ClassLoader classLoader) {
+        Preconditions.checkAndThrow(packageName.isEmpty(), () -> new IllegalArgumentException("Package name cannot be empty."));
+
+        packageName.forEach(name -> run(name, classLoader));
     }
 }

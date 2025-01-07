@@ -11,6 +11,7 @@ import ru.cod331n.util.validation.Preconditions;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+import java.util.Objects;
 
 public final class AnnotationBootstrapLogic {
     public void run(@NotNull String packageName, @Nullable ClassLoader classLoader) {
@@ -22,7 +23,7 @@ public final class AnnotationBootstrapLogic {
                 Class<? extends Annotation> annotationProcessing = reflection.getGenericType(clazz);
 
                 Preconditions.checkAndThrow(
-                        !(processorInstance instanceof AbstractAnnotationProcessor) || annotationProcessing == null,
+                        !(processorInstance instanceof AbstractAnnotationProcessor) || Objects.isNull(annotationProcessing),
                         () -> new RuntimeException("Unable to determine generic type for processor: " + clazz.getName())
                 );
 

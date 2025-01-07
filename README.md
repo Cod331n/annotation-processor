@@ -6,7 +6,7 @@ Annotation Processor — это библиотека для обработки �
 
 ```kotlin
 dependencies {
-    annotationProcessor("com.github.Cod331n:annotation-processor:<version>")
+    implementation("com.github.Cod331n:annotation-processor:<version>")
 }
 ```
 
